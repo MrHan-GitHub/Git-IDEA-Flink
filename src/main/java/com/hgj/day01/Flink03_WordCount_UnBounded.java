@@ -2,6 +2,7 @@ package com.hgj.day01;
 
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.java.functions.KeySelector;
+import org.apache.flink.api.java.tuple.Tuple;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.streaming.api.datastream.DataStreamSource;
 import org.apache.flink.streaming.api.datastream.KeyedStream;
@@ -11,7 +12,7 @@ import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 public class Flink03_WordCount_UnBounded {
     public static void main(String[] args) throws Exception {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
-        env.setParallelism(1);
+        env.setParallelism(2);
 
         DataStreamSource<String> source = env.socketTextStream("hadoop102", 9999);
 
@@ -24,14 +25,9 @@ public class Flink03_WordCount_UnBounded {
             }
         });
 
-        KeyedStream<Tuple2<String, Integer>, String> WordToOneKS = wordToOneDS.keyBy(new KeySelector<Tuple2<String, Integer>, String>() {
-            @Override
-            public String getKey(Tuple2<String, Integer> stringIntegerTuple2) throws Exception {
-                return stringIntegerTuple2.f0;
-            }
-        });
+        KeyedStream<Tuple2<String, Integer>, Tuple> WordToOneKS = wordToOneDS.keyBy(0);
 
-        wordToOneDS.print();
+        WordToOneKS.sum(1).print();
 
         env.execute();
     }

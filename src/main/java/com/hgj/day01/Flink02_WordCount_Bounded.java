@@ -1,13 +1,13 @@
 package com.hgj.day01;
 
 import org.apache.flink.api.common.functions.MapFunction;
-import org.apache.flink.api.java.functions.KeySelector;
 import org.apache.flink.api.java.tuple.Tuple;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.streaming.api.datastream.DataStreamSource;
 import org.apache.flink.streaming.api.datastream.KeyedStream;
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+
 
 public class Flink02_WordCount_Bounded {
     public static void main(String[] args) throws Exception {
@@ -39,6 +39,7 @@ public class Flink02_WordCount_Bounded {
         SingleOutputStreamOperator<Tuple2<String, Integer>> result = wordToOneKS.sum(1);
 
         result.print();
+
 
         env.execute();
 
