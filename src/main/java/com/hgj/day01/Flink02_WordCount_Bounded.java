@@ -16,7 +16,7 @@ public class Flink02_WordCount_Bounded {
 
         env.setParallelism(1);
 
-        DataStreamSource<String> source = env.readTextFile("F:\\IDEA\\code\\Flink\\input\\wordcount\\Word.txt");
+        DataStreamSource<String> source = env.readTextFile("F:\\IDEA\\code\\Flink\\input\\Word.txt");
 
         SingleOutputStreamOperator<String> wordDS = source.flatMap(new Flink01_WordCount_batch.MyFlatMapFunction());
 
