@@ -26,7 +26,10 @@ public class Flink03_UVCount {
 
         env.setRuntimeMode(RuntimeExecutionMode.BATCH);
 
-        DataStreamSource<String> source = env.readTextFile("hdfs://hadoop102:9870/flink/UserBehavior.csv");
+        DataStreamSource<String> source = env.readTextFile("hdfs://hadoop102:8020/flink/UserBehavior.csv");
+
+        //DataStreamSource<String> source = env.readTextFile("input/UserBehavior.csv");
+
 
         SingleOutputStreamOperator<UserBehavior> map = source.map(new Flink01_PVCount_WordCount.myUserBehavior());
 
@@ -34,7 +37,8 @@ public class Flink03_UVCount {
 
         //KeyedStream<UserBehavior, String> keyBy = filter.keyBy(value -> "uv");
 
-        KeyedStream<UserBehavior, Long> keyBy = filter.keyBy(value -> value.getUserId());
+        KeyedStream<UserBehavior,
+                Long> keyBy = filter.keyBy(value -> value.getUserId());
 
 
         keyBy.process(new KeyedProcessFunction<Long, UserBehavior, Integer>() {
@@ -42,10 +46,8 @@ public class Flink03_UVCount {
 
             @Override
             public void processElement(UserBehavior value, Context ctx, Collector<Integer> out) throws Exception {
-                if (!uids.contains(value.getUserId())) {
                     uids.add(value.getUserId());
                     out.collect(uids.size());
-                }
             }
         }).print();
 

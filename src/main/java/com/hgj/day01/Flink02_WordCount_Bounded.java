@@ -16,7 +16,9 @@ public class Flink02_WordCount_Bounded {
 
         env.setParallelism(1);
 
-        DataStreamSource<String> source = env.readTextFile("F:\\IDEA\\code\\Flink\\input\\Word.txt");
+        DataStreamSource<String> source = env.readTextFile("hdfs://hadoop102:8020/flink/Word.txt");
+
+        source.print();
 
         SingleOutputStreamOperator<String> wordDS = source.flatMap(new Flink01_WordCount_batch.MyFlatMapFunction());
 
@@ -27,6 +29,7 @@ public class Flink02_WordCount_Bounded {
             }
         });
 
+
         //KeyedStream<Tuple2<String, Integer>, Object> wordToOneKS = wordToOneDS.keyBy(new KeySelector<Tuple2<String, Integer>, Object>() {
         //    @Override
         //    public Object getKey(Tuple2<String, Integer> stringIntegerTuple2) throws Exception {
@@ -34,11 +37,11 @@ public class Flink02_WordCount_Bounded {
         //    }
         //});
 
-        KeyedStream<Tuple2<String, Integer>, Tuple> wordToOneKS = wordToOneDS.keyBy(0);
-
-        SingleOutputStreamOperator<Tuple2<String, Integer>> result = wordToOneKS.sum(1);
-
-        result.print();
+        //KeyedStream<Tuple2<String, Integer>, Tuple> wordToOneKS = wordToOneDS.keyBy(0);
+        //
+        //SingleOutputStreamOperator<Tuple2<String, Integer>> result = wordToOneKS.sum(1);
+        //
+        //result.print();
 
 
         env.execute();

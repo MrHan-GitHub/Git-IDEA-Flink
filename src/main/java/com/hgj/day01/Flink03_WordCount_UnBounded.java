@@ -4,15 +4,21 @@ import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.java.functions.KeySelector;
 import org.apache.flink.api.java.tuple.Tuple;
 import org.apache.flink.api.java.tuple.Tuple2;
+import org.apache.flink.streaming.api.datastream.AllWindowedStream;
 import org.apache.flink.streaming.api.datastream.DataStreamSource;
 import org.apache.flink.streaming.api.datastream.KeyedStream;
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.apache.flink.streaming.api.windowing.assigners.TumblingProcessingTimeWindows;
+import org.apache.flink.streaming.api.windowing.assigners.WindowAssigner;
+import org.apache.flink.streaming.api.windowing.time.Time;
+import org.apache.flink.streaming.api.windowing.windows.TimeWindow;
+import org.apache.flink.streaming.api.windowing.windows.Window;
 
 public class Flink03_WordCount_UnBounded {
     public static void main(String[] args) throws Exception {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
-        env.setParallelism(2);
+        //env.setParallelism(2);
 
         DataStreamSource<String> source = env.socketTextStream("hadoop102", 9999);
 
@@ -25,9 +31,11 @@ public class Flink03_WordCount_UnBounded {
             }
         });
 
-        KeyedStream<Tuple2<String, Integer>, Tuple> WordToOneKS = wordToOneDS.keyBy(0);
+        AllWindowedStream<Tuple2<String, Integer>, TimeWindow> windowAll = wordToOneDS.windowAll(TumblingProcessingTimeWindows.of(Time.seconds(5)));
 
-        WordToOneKS.sum(1).print();
+        //KeyedStream<Tuple2<String, Integer>, String> WordToOneKS = wordToOneDS.keyBy(value -> value.f0);
+
+        windowAll.sum(1).print();
 
         env.execute();
     }
