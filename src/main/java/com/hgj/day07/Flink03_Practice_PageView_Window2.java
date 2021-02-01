@@ -30,11 +30,13 @@ public class Flink03_Practice_PageView_Window2 {
     public static void main(String[] args) throws Exception {
 
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
-        //env.setParallelism(1);
+        env.setParallelism(1);
 
-        DataStreamSource<String> source = env.readTextFile("input/UserBehavior.csv");
+        //DataStreamSource<String> source = env.readTextFile("input/UserBehavior.csv");
 
-        WatermarkStrategy<UserBehavior> userBehaviorWatermarkStrategy = WatermarkStrategy.<UserBehavior>forMonotonousTimestamps()
+        DataStreamSource<String> source = env.socketTextStream("hadoop102",9999);
+
+                WatermarkStrategy<UserBehavior> userBehaviorWatermarkStrategy = WatermarkStrategy.<UserBehavior>forMonotonousTimestamps()
                 .withTimestampAssigner(new SerializableTimestampAssigner<UserBehavior>() {
                     @Override
                     public long extractTimestamp(UserBehavior element, long recordTimestamp) {
