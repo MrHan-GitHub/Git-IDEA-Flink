@@ -172,7 +172,7 @@ public class Flink06_Practice_ItemCountTopN {
             out.collect(sb.toString());
 
             //休息一会
-            Thread.sleep(2000);
+            Thread.sleep(200);
         }
     }
 }
